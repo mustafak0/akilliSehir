@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { firebaseService } from '@/services/firebase';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import MapView from 'react-native-maps';
 import Modal from 'react-native-modal';

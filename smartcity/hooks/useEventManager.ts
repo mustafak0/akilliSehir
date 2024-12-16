@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { db } from '@/services/firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 interface Event {
   id: string;
@@ -14,16 +16,25 @@ export function useEventManager() {
   const [events, setEvents] = useState<Event[]>([]);
 
   // Yeni bir olay ekler
-  const addEvent = (newEvent: Event) => {
-    setEvents((prev) => [...prev, newEvent]);
+  const addEvent = async (newEvent: Event) => {
+    try {
+      const docRef = await addDoc(collection(db, "events"), newEvent);
+      setEvents((prev) => [...prev, { ...newEvent, id: docRef.id }]);
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   };
 
   // Acil durum olayını ekler
-  const addEmergencyEvent = (newEvent: Event) => {
-    setEvents((prev) => [
-      ...prev,
-      { ...newEvent, isEmergency: true }, // Acil durum bayrağı ekleniyor
-    ]);
+  const addEmergencyEvent = async (newEvent: Event) => {
+    try {
+      const docRef = await addDoc(collection(db, "events"), { ...newEvent, isEmergency: true });
+      setEvents((prev) => [...prev, { ...newEvent, id: docRef.id, isEmergency: true }]);
+      console.log("Emergency document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   };
 
   // Belirli bir türdeki olayları filtreler
